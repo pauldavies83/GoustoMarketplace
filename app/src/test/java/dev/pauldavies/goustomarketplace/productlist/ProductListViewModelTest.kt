@@ -1,16 +1,15 @@
 package dev.pauldavies.goustomarketplace.productlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
+import dev.pauldavies.goustomarketplace.base.requireValue
 import dev.pauldavies.goustomarketplace.persistence.model.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import dev.pauldavies.goustomarketplace.util.RxSchedulerRule
 import io.reactivex.Completable
 import io.reactivex.Observable
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -47,9 +46,25 @@ class ProductListViewModelTest {
     }
 
     @Test
-    fun `products from repository mapped to state`() {
+    fun `on start, state is loading`() {
+        productRepository.stub { whenever(it.products()).thenReturn(Observable.empty()) }
         viewModel.apply {
-            assertEquals(expectedItems, (state.value as ProductListViewModel.State.Loaded).products)
+            assertTrue(state.requireValue() is ProductListViewModel.State.Loading)
+        }
+    }
+
+    @Test
+    fun `if no products from repository, state is loading`() {
+        productRepository.stub { whenever(it.products()).thenReturn(Observable.just(emptyList())) }
+        viewModel.apply {
+            assertTrue(state.requireValue() is ProductListViewModel.State.NoResults)
+        }
+    }
+
+    @Test
+    fun `products from repository mapped to loaded state`() {
+        viewModel.apply {
+            assertEquals(expectedItems, (state.requireValue() as ProductListViewModel.State.Loaded).products)
         }
     }
 }

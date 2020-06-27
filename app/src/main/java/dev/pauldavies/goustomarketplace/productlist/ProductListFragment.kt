@@ -3,6 +3,7 @@ package dev.pauldavies.goustomarketplace.productlist
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -13,7 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.goustomarketplace.R
 import dev.pauldavies.goustomarketplace.dp
 import kotlinx.android.synthetic.main.fragment_product_list.*
-
 
 @AndroidEntryPoint
 class ProductListFragment : Fragment(R.layout.fragment_product_list) {
@@ -31,11 +31,12 @@ class ProductListFragment : Fragment(R.layout.fragment_product_list) {
         }
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            when (state) {
-                is ProductListViewModel.State.Loading -> {}
-                is ProductListViewModel.State.Loaded -> {
-                    productListAdapter.submitList(state.products)
-                }
+            productListLoadingProgress.isVisible = state is ProductListViewModel.State.Loading
+            productListNoResultsLabel.isVisible = state is ProductListViewModel.State.NoResults
+            productListRecyclerView.isVisible = state is ProductListViewModel.State.Loaded
+
+            if (state is ProductListViewModel.State.Loaded) {
+                productListAdapter.submitList(state.products)
             }
         })
     }
