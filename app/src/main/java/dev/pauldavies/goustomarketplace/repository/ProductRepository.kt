@@ -10,9 +10,9 @@ internal class ProductRepository @Inject constructor(
 
     fun products(): Single<List<Product>> {
         return goustoApi.getProducts().map { apiResponse ->
-            apiResponse.data.map { Product(it.id, it.title, it.list_price) }
+            apiResponse.data.map { Product(it.id, it.title, it.list_price, it.images.size?.src ) }
         }
     }
 }
 
-data class Product(val id: String, val title: String, val price: Double)
+data class Product(val id: String, val title: String, val price: Double, val imageUrl: String?)

@@ -48,5 +48,6 @@ internal class ProductListViewModel @ViewModelInject constructor(
 private fun Product.toProductListItem() = ProductListItem(
     id = id,
     title = title,
-    price = price.toString() // format currency
+    price = price.toString(), // format currency
+    imageUrl = imageUrl
 )

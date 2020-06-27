@@ -4,17 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:minHeight="128dp">
+
+    <ImageView
+        android:id="@+id/productImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/rounded_corners_mask"
+        app:layout_constraintEnd_toStartOf="@id/productTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/productTitle"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="4dp"
+        tools:text="Product Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@id/productImage"
+        app:layout_constraintTop_toTopOf="@id/productImage"
+        app:layout_constraintBottom_toTopOf="@id/productPrice"/>
 
     <TextView
         android:id="@+id/productPrice"
@@ -23,9 +36,9 @@
         android:layout_margin="4dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/productTitle"
         app:layout_constraintTop_toBottomOf="@id/productTitle"
+        app:layout_constraintBottom_toBottomOf="@id/productImage"
         tools:text="£16.99" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

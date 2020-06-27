@@ -21,10 +21,12 @@ class ProductListViewModelTest {
     private val productId = "productId"
     private val productTitle = "product title"
     private val productPrice = 9.99
-    private val product = Product(productId, productTitle, productPrice)
+    private val productImageUrl = "https://image.url/1.jpg"
+    private val product = Product(productId, productTitle, productPrice, productImageUrl)
     private val displayProductPrice = productPrice.toString()
+
     private val expectedItems = listOf(
-        ProductListItem(productId, productTitle, displayProductPrice)
+        ProductListItem(productId, productTitle, displayProductPrice, productImageUrl)
     )
 
 
