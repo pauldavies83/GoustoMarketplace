@@ -1,19 +1,39 @@
 package dev.pauldavies.goustomarketplace.persistence
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import dev.pauldavies.goustomarketplace.persistence.model.Product
+import androidx.room.*
+import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
+import dev.pauldavies.goustomarketplace.persistence.model.DbProduct
+import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategories
+import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategoriesCrossRef
 import io.reactivex.Observable
 
 @Dao
 interface ProductsStorage {
 
     @Query("SELECT * FROM product")
-    fun getAllProducts(): Observable<List<Product>>
+    fun getAllProducts(): Observable<List<DbProduct>>
+
+    @Transaction
+    @Query("SELECT * FROM product")
+    fun getAllProductsWithCategories(): Observable<List<DbProductWithCategories>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProducts(it: List<Product>)
+    fun insertProducts(products: List<DbProduct>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCategories(categories: List<DbCategory>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertProductXCategory(productXCategory: List<DbProductWithCategoriesCrossRef>)
+
+    @Transaction
+    fun insertProductsWithCategories(
+        products: List<DbProduct>,
+        categories: List<DbCategory>,
+        productXcategory: List<DbProductWithCategoriesCrossRef>
+    ) {
+        insertProducts(products)
+        insertCategories(categories)
+        insertProductXCategory(productXcategory)
+    }
 }

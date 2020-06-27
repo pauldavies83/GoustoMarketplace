@@ -3,7 +3,7 @@ package dev.pauldavies.goustomarketplace.productlist
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
 import dev.pauldavies.goustomarketplace.base.requireValue
-import dev.pauldavies.goustomarketplace.persistence.model.Product
+import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import dev.pauldavies.goustomarketplace.util.RxSchedulerRule
 import io.reactivex.Completable
@@ -17,6 +17,7 @@ class ProductListViewModelTest {
 
     @get:Rule
     val rxSchedulerRule = RxSchedulerRule()
+
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -24,11 +25,17 @@ class ProductListViewModelTest {
     private val productTitle = "product title"
     private val productPrice = 9.99
     private val productImageUrl = "https://image.url/1.jpg"
-    private val product = Product(productId, productTitle, productPrice, productImageUrl)
+    private val product =
+        Product(productId, productTitle, productPrice, productImageUrl, emptyList())
     private val displayProductPrice = "£9.99"
 
     private val expectedItems = listOf(
-        ProductListItem(productId, productTitle, displayProductPrice, productImageUrl)
+        ProductListItem(
+            productId,
+            productTitle,
+            displayProductPrice,
+            productImageUrl
+        )
     )
 
     private val productRepository = mock<ProductRepository> {
@@ -64,7 +71,10 @@ class ProductListViewModelTest {
     @Test
     fun `products from repository mapped to loaded state`() {
         viewModel.apply {
-            assertEquals(expectedItems, (state.requireValue() as ProductListViewModel.State.Loaded).products)
+            assertEquals(
+                expectedItems,
+                (state.requireValue() as ProductListViewModel.State.Loaded).products
+            )
         }
     }
 }

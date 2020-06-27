@@ -1,9 +1,13 @@
 package dev.pauldavies.goustomarketplace.repository
 
+import dev.pauldavies.goustomarketplace.api.ApiCategory
 import dev.pauldavies.goustomarketplace.api.ApiProduct
 import dev.pauldavies.goustomarketplace.api.GoustoApi
 import dev.pauldavies.goustomarketplace.persistence.ProductsStorage
-import dev.pauldavies.goustomarketplace.persistence.model.Product
+import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
+import dev.pauldavies.goustomarketplace.persistence.model.DbProduct
+import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategories
+import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategoriesCrossRef
 import io.reactivex.Completable
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -13,23 +17,68 @@ internal class ProductRepository @Inject constructor(
     private val productsStorage: ProductsStorage
 ) {
 
+    fun products(): Observable<List<Product>> {
+        return productsStorage.getAllProductsWithCategories()
+            .map { productsWithCategories ->
+                productsWithCategories.map { it.toDomainProduct() }
+            }
+    }
+
     fun syncProducts(): Completable {
         return goustoApi.getProducts()
-            .map { apiResponse ->
-                apiResponse.data.map { it.toProduct() }
-            }.doOnSuccess {
-                productsStorage.insertProducts(it)
+            .doOnSuccess { apiResponse ->
+                insertApiResponseToStorage(apiResponse.data)
             }.ignoreElement()
     }
 
-    fun products(): Observable<List<Product>> {
-        return productsStorage.getAllProducts()
+    private fun insertApiResponseToStorage(apiProducts: List<ApiProduct>) {
+        val products = mutableSetOf<DbProduct>()
+        val categories = mutableSetOf<DbCategory>()
+        val productXcategory = mutableSetOf<DbProductWithCategoriesCrossRef>()
+
+        apiProducts.forEach { apiProduct ->
+            val dbProduct = apiProduct.toDbProduct()
+            products.add(dbProduct)
+
+            apiProduct.categories.forEach { apiCategory ->
+                val dbCategory = apiCategory.toDbCategory()
+
+                categories.add(dbCategory)
+                productXcategory.add(DbProductWithCategoriesCrossRef(dbProduct.id, dbCategory.id))
+            }
+        }
+        productsStorage.insertProductsWithCategories(
+            products = products.toList(),
+            categories = categories.toList(),
+            productXcategory = productXcategory.toList()
+        )
     }
 }
 
-private fun ApiProduct.toProduct() = Product(
+private fun ApiProduct.toDbProduct() = DbProduct(
     id = id,
     title = title,
     price = list_price,
     imageUrl = images.size?.src
+)
+
+private fun ApiCategory.toDbCategory() = DbCategory(
+    id = id,
+    title = title
+)
+
+private fun DbProductWithCategories.toDomainProduct() = Product(
+    id = product.id,
+    title = product.title,
+    price = product.price,
+    imageUrl = product.imageUrl,
+    categories = categories.map { it.title }
+)
+
+data class Product(
+    val id: String,
+    val title: String,
+    val price: Double,
+    val imageUrl: String?,
+    val categories: List<String>
 )

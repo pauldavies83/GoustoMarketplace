@@ -2,7 +2,7 @@ package dev.pauldavies.goustomarketplace.productlist
 
 import androidx.hilt.lifecycle.ViewModelInject
 import dev.pauldavies.goustomarketplace.base.BaseViewModel
-import dev.pauldavies.goustomarketplace.persistence.model.Product
+import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -49,7 +49,7 @@ internal class ProductListViewModel @ViewModelInject constructor(
 private fun Product.toProductListItem() = ProductListItem(
     id = id,
     title = title,
-    price = currencyFormtter.format(price), // format currency
+    price = currencyFormtter.format(price),
     imageUrl = imageUrl
 )
 

@@ -3,9 +3,18 @@ package dev.pauldavies.goustomarketplace.persistence
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import dev.pauldavies.goustomarketplace.persistence.model.Product
+import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
+import dev.pauldavies.goustomarketplace.persistence.model.DbProduct
+import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategoriesCrossRef
 
-@androidx.room.Database(entities = [Product::class], version = 1)
+@androidx.room.Database(
+    entities = [
+        DbProduct::class,
+        DbCategory::class,
+        DbProductWithCategoriesCrossRef::class
+    ],
+    version = 1
+)
 abstract class Database : RoomDatabase() {
     abstract fun productsStorage(): ProductsStorage
 

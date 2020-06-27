@@ -7,7 +7,7 @@ import retrofit2.http.GET
 
 interface GoustoApi {
 
-    @GET("products?image_sizes[]=750")
+    @GET("products?image_sizes[]=750&includes[]=categories")
     fun getProducts(): Single<ApiProductResponse>
 }
 
@@ -19,8 +19,12 @@ data class ApiProduct(
     val id: String,
     val title: String,
     val list_price: Double,
+    val categories: List<ApiCategory> = emptyList(),
     val images: ApiProductImageSize
 )
+
+@Serializable
+data class ApiCategory(val id: String, val title: String)
 
 @Serializable
 data class ApiProductImageSize(
