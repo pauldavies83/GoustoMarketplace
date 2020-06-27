@@ -1,6 +1,6 @@
 package dev.pauldavies.goustomarketplace.api
 
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.Single
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.http.GET

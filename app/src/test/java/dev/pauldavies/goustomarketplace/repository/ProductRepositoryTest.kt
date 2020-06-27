@@ -1,9 +1,14 @@
 package dev.pauldavies.goustomarketplace.repository
 
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import dev.pauldavies.goustomarketplace.api.*
-import io.reactivex.rxjava3.core.Single
+import dev.pauldavies.goustomarketplace.persistence.ProductsStorage
+import dev.pauldavies.goustomarketplace.persistence.model.Product
+import io.reactivex.Observable
+import io.reactivex.Single
 import org.junit.Test
 
 class ProductRepositoryTest {
@@ -29,10 +34,32 @@ class ProductRepositoryTest {
         whenever(it.getProducts()).thenReturn(Single.just(response))
     }
 
-    private val repository by lazy { ProductRepository(goustoApi) }
+    private val productsStorage = mock<ProductsStorage> {
+        whenever(it.getAllProducts()).thenReturn(Observable.just(expectedProducts))
+    }
+
+    private val repository by lazy { ProductRepository(goustoApi, productsStorage) }
 
     @Test
-    fun `api response mapped to domain model`() {
+    fun `database response returned as queried`() {
+        repository.products().test()
+            .assertResult(expectedProducts)
+    }
+
+    @Test
+    fun `when api sync succeeds, insert values into database`() {
+        repository.syncProducts().test()
+
+        verify(productsStorage).insertProducts(expectedProducts)
+    }
+
+    @Test
+    fun `when api sync fails, database response returned as queried`() {
+        goustoApi.stub {
+            whenever(it.getProducts()).thenReturn(Single.error(Throwable()))
+        }
+        repository.syncProducts()
+
         repository.products().test()
             .assertResult(expectedProducts)
     }

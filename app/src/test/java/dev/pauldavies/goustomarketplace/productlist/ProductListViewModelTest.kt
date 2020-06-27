@@ -2,11 +2,14 @@ package dev.pauldavies.goustomarketplace.productlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import dev.pauldavies.goustomarketplace.repository.Product
+import dev.pauldavies.goustomarketplace.persistence.model.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import dev.pauldavies.goustomarketplace.util.RxSchedulerRule
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.Completable
+import io.reactivex.Observable
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -30,12 +33,22 @@ class ProductListViewModelTest {
     )
 
     private val productRepository = mock<ProductRepository> {
-        whenever(it.products()).thenReturn(Single.just(listOf(product)))
+        whenever(it.syncProducts()).thenReturn(Completable.complete())
+        whenever(it.products()).thenReturn(Observable.just(listOf(product)))
+    }
+
+    private val viewModel by lazy { ProductListViewModel(productRepository) }
+
+    @Test
+    fun `on start, sync products with api`() {
+        viewModel
+
+        verify(productRepository, times(1)).syncProducts()
     }
 
     @Test
     fun `products from repository mapped to state`() {
-        ProductListViewModel(productRepository).apply {
+        viewModel.apply {
             assertEquals(expectedItems, (state.value as ProductListViewModel.State.Loaded).products)
         }
     }

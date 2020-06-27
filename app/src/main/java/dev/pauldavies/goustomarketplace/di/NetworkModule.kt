@@ -17,7 +17,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import javax.inject.Singleton
 
 @Module
@@ -53,7 +53,7 @@ open class NetworkModule {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl())
-            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(
                 /** enable ignoreUnknownKeys to save having to parse every json key from the API &
                 enable isLenient as inconsistent quote usage in api response,
