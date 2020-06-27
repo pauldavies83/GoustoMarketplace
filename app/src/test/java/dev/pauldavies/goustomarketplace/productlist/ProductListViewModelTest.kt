@@ -1,8 +1,12 @@
 package dev.pauldavies.goustomarketplace.productlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import dev.pauldavies.goustomarketplace.util.RxSchedulerRule
+import io.reactivex.rxjava3.core.Single
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -14,12 +18,24 @@ class ProductListViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val productRepository = ProductRepository()
+    private val productId = "productId"
+    private val productTitle = "product title"
+    private val productPrice = 9.99
+    private val product = Product(productId, productTitle, productPrice)
+    private val displayProductPrice = productPrice.toString()
+    private val expectedItems = listOf(
+        ProductListItem(productId, productTitle, displayProductPrice)
+    )
+
+
+    private val productRepository = mock<ProductRepository> {
+        whenever(it.products()).thenReturn(Single.just(listOf(product)))
+    }
 
     @Test
-    fun `first test`() {
+    fun `products from repository mapped to state`() {
         ProductListViewModel(productRepository).apply {
-            assertEquals("Hello World", (state.value as ProductListViewModel.State.Loaded).title)
+            assertEquals(expectedItems, (state.value as ProductListViewModel.State.Loaded).products)
         }
     }
 }

@@ -4,14 +4,17 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 internal class ProductListViewModel @ViewModelInject constructor(
     productRepository: ProductRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val disposables = CompositeDisposable()
 
@@ -20,15 +23,20 @@ internal class ProductListViewModel @ViewModelInject constructor(
 
     init {
         disposables += productRepository.products()
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                _state.value = State.Loaded(it.first().title)
-        }
+            .subscribeBy { products ->
+                _state.value = State.Loaded(
+                    products.map { it.toProductListItem() }
+                )
+            }
     }
 
     sealed class State {
-        object Loading: State()
-        data class Loaded(val title: String): State()
+        object Loading : State()
+        data class Loaded(val products: List<ProductListItem>) : State() {
+
+        }
     }
 
     override fun onCleared() {
@@ -36,3 +44,9 @@ internal class ProductListViewModel @ViewModelInject constructor(
         disposables.dispose()
     }
 }
+
+private fun Product.toProductListItem() = ProductListItem(
+    id = id,
+    title = title,
+    price = price.toString() // format currency
+)
