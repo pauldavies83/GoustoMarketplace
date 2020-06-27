@@ -17,7 +17,7 @@ class ProductListFragment : Fragment(R.layout.fragment_product_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.state.observe(viewLifecycleOwner, Observer {  state ->
+        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             when (state) {
                 is ProductListViewModel.State.Loading -> {}
                 is ProductListViewModel.State.Loaded -> {

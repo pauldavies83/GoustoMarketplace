@@ -1,11 +1,15 @@
 package dev.pauldavies.goustomarketplace.repository
 
+import io.reactivex.rxjava3.core.Observable
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class ProductRepository @Inject constructor() {
 
-    fun products(): List<Product> {
-        return listOf(Product(title = "Hello Gousto"))
+    fun products(): Observable<List<Product>> {
+        return Observable.just(
+            listOf(Product(title = "Hello World"))
+        )
     }
 }
 
