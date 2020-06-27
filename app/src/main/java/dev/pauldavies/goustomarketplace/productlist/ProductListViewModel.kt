@@ -11,6 +11,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.text.NumberFormat
+import java.util.*
 
 internal class ProductListViewModel @ViewModelInject constructor(
     productRepository: ProductRepository
@@ -34,9 +36,7 @@ internal class ProductListViewModel @ViewModelInject constructor(
 
     sealed class State {
         object Loading : State()
-        data class Loaded(val products: List<ProductListItem>) : State() {
-
-        }
+        data class Loaded(val products: List<ProductListItem>) : State()
     }
 
     override fun onCleared() {
@@ -48,6 +48,11 @@ internal class ProductListViewModel @ViewModelInject constructor(
 private fun Product.toProductListItem() = ProductListItem(
     id = id,
     title = title,
-    price = price.toString(), // format currency
+    price = currencyFormtter.format(price), // format currency
     imageUrl = imageUrl
 )
+
+private val currencyFormtter = NumberFormat.getCurrencyInstance().apply {
+    maximumFractionDigits = 2
+    currency = Currency.getInstance("GBP")
+}

@@ -23,12 +23,11 @@ class ProductListViewModelTest {
     private val productPrice = 9.99
     private val productImageUrl = "https://image.url/1.jpg"
     private val product = Product(productId, productTitle, productPrice, productImageUrl)
-    private val displayProductPrice = productPrice.toString()
+    private val displayProductPrice = "£9.99"
 
     private val expectedItems = listOf(
         ProductListItem(productId, productTitle, displayProductPrice, productImageUrl)
     )
-
 
     private val productRepository = mock<ProductRepository> {
         whenever(it.products()).thenReturn(Single.just(listOf(product)))
