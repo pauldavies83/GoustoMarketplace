@@ -18,6 +18,7 @@ data class ApiProductResponse(val data: List<ApiProduct>)
 data class ApiProduct(
     val id: String,
     val title: String,
+    val description: String,
     val list_price: Double,
     val categories: List<ApiCategory> = emptyList(),
     val images: ApiProductImageSize,

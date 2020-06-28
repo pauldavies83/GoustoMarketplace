@@ -33,8 +33,7 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                             }
                             productDetailsTitle.text = title
                             producDetailstAgeRestricted.isVisible = ageRestricted
-                            // TODO add description
-                            productDetailsDescription.text = "Description goes here"
+                            productDetailsDescription.text = description
                             productDetailsPrice.text = price
                         }
                     }

@@ -32,14 +32,15 @@ internal class ProductDetailsViewModel @ViewModelInject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onSuccess = {
+                onSuccess = { product ->
                     setState(
                         State.Loaded(
-                            title = it.title,
-                            price = currencyFormtter.format(it.price),
-                            imageUrl = it.imageUrl,
-                            ageRestricted = it.ageRestricted,
-                            categories = it.categories
+                            title = product.title,
+                            description = product.description,
+                            price = currencyFormtter.format(product.price),
+                            imageUrl = product.imageUrl,
+                            ageRestricted = product.ageRestricted,
+                            categories = product.categories
                         )
                     )
                 },

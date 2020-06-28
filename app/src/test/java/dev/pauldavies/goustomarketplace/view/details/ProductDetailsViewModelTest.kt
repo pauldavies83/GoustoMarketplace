@@ -60,7 +60,7 @@ class ProductDetailsViewModelTest {
         viewModel.apply {
             val expectedState = ProductDetailsViewModel.State.Loaded(
                 title = product.title,
-                description = null,
+                description = product.description,
                 price = currencyFormtter.format(product.price),
                 imageUrl = product.imageUrl,
                 ageRestricted = product.ageRestricted,

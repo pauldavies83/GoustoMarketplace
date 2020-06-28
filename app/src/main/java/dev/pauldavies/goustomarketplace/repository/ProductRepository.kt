@@ -66,6 +66,7 @@ internal class ProductRepository @Inject constructor(
 private fun ApiProduct.toDbProduct() = DbProduct(
     id = id,
     title = title,
+    description = description,
     price = list_price,
     imageUrl = images.size?.src,
     ageRestricted = age_restricted
@@ -79,6 +80,7 @@ private fun ApiCategory.toDbCategory() = DbCategory(
 private fun DbProductWithCategories.toDomainProduct() = Product(
     id = product.id,
     title = product.title,
+    description = product.description,
     price = product.price,
     imageUrl = product.imageUrl,
     ageRestricted = product.ageRestricted,
@@ -88,6 +90,7 @@ private fun DbProductWithCategories.toDomainProduct() = Product(
 data class Product(
     val id: String,
     val title: String,
+    val description: String,
     val price: Double,
     val imageUrl: String?,
     val ageRestricted: Boolean,

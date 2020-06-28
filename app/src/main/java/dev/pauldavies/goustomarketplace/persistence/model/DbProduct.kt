@@ -6,6 +6,7 @@ import androidx.room.*
 data class DbProduct(
     @PrimaryKey @ColumnInfo(name = "productId") val id: String,
     val title: String,
+    val description: String,
     val price: Double,
     val imageUrl: String?,
     val ageRestricted: Boolean

@@ -16,6 +16,7 @@ fun randomDouble() = Random().nextDouble()
 object ProductCreator {
     private val productId = randomString()
     private val productTitle = randomString()
+    private val productDescription = randomString()
     private val productImageUrl = randomString()
     private val productPrice = randomDouble()
     private const val productAgeRestricted = true
@@ -28,6 +29,7 @@ object ProductCreator {
         return ApiProduct(
             id = productId,
             title = productTitle,
+            description = productDescription,
             list_price = productPrice,
             images = ApiProductImageSize(ApiProductImage(src = productImageUrl)),
             categories = apiCategories,
@@ -40,6 +42,7 @@ object ProductCreator {
             product = DbProduct(
                 id = apiProduct.id,
                 title = apiProduct.title,
+                description = apiProduct.description,
                 price = apiProduct.list_price,
                 imageUrl = apiProduct.images.size?.src,
                 ageRestricted = apiProduct.age_restricted
@@ -52,6 +55,7 @@ object ProductCreator {
         return Product(
             id = dbProductWithCategories.product.id,
             title = dbProductWithCategories.product.title,
+            description = dbProductWithCategories.product.description,
             price = dbProductWithCategories.product.price,
             imageUrl = dbProductWithCategories.product.imageUrl,
             ageRestricted = dbProductWithCategories.product.ageRestricted,
