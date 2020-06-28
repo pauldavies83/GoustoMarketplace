@@ -13,7 +13,7 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -53,7 +53,6 @@
                 android:text="@string/age_restricted_label"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@id/productDetailsTitle"
                 app:layout_constraintBottom_toBottomOf="@id/productDetailsImage"
                 app:layout_constraintEnd_toEndOf="@id/productDetailsImage"
                 app:layout_constraintHorizontal_bias="0.97"
@@ -102,13 +101,34 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/productDetailsCategoriesScroll"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/barrier"/>
 
+            <HorizontalScrollView
+                android:id="@+id/productDetailsCategoriesScroll"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:scrollbars="none"
+                app:layout_constraintTop_toBottomOf="@id/productDetailsDescription">
+
+                <LinearLayout
+                    android:id="@+id/productDetailsCategoriesContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"/>
+
+            </HorizontalScrollView>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>

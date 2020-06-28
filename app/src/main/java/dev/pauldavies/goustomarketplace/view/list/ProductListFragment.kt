@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.goustomarketplace.R
+import dev.pauldavies.goustomarketplace.base.emptyString
 import dev.pauldavies.goustomarketplace.dp
 import dev.pauldavies.goustomarketplace.requireAppCompatActivity
 import dev.pauldavies.goustomarketplace.view.details.ProductDetailsFragment
@@ -38,10 +39,12 @@ class ProductListFragment : Fragment(R.layout.fragment_product_list) {
         inflater.inflate(R.menu.menu_product_list, menu)
 
         val searchView = menu.findItem(R.id.productListSearch).actionView as SearchView
+        viewModel.onQueryChanged(emptyString())
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?) = true
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (!isVisible) return true
                 viewModel.onQueryChanged(newText)
                 return true
             }

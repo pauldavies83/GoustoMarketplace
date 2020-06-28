@@ -18,7 +18,7 @@ data class DbCategory(
     val title: String
 )
 
-@Entity(tableName = "productXcateogies", primaryKeys = ["productId", "categoryId"])
+@Entity(tableName = "productXcategories", primaryKeys = ["productId", "categoryId"])
 data class DbProductWithCategoriesCrossRef(
     val productId: String,
     val categoryId: String

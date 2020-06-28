@@ -1,7 +1,9 @@
 package dev.pauldavies.goustomarketplace.view.details
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
@@ -52,6 +54,15 @@ class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
                             producDetailstAgeRestricted.isVisible = ageRestricted
                             productDetailsDescription.text = description
                             productDetailsPrice.text = price
+                            categories.forEach { categoryTitle ->
+                                val textView = LayoutInflater.from(context).inflate(
+                                    R.layout.item_product_details_category,
+                                    productDetailsCategoriesContainer,
+                                    false
+                                ) as TextView
+                                textView.text = categoryTitle
+                                productDetailsCategoriesContainer.addView(textView)
+                            }
                         }
                     }
                 }

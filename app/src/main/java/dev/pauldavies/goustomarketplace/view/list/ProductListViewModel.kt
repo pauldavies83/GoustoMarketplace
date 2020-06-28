@@ -28,7 +28,7 @@ internal class ProductListViewModel @ViewModelInject constructor(
     init {
         syncProducts()
 
-        disposables += searchQuery.startWith("")
+        disposables += searchQuery.startWith(emptyString())
             .throttleLatest(500, TimeUnit.MILLISECONDS)
             .switchMap { query ->
                 productRepository.products(query)
