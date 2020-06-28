@@ -2,16 +2,20 @@ package dev.pauldavies.goustomarketplace.productlist
 
 import androidx.hilt.lifecycle.ViewModelInject
 import dev.pauldavies.goustomarketplace.base.BaseViewModel
+import dev.pauldavies.goustomarketplace.base.Logger
+import dev.pauldavies.goustomarketplace.base.requireValue
 import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import java.text.NumberFormat
 import java.util.*
 
 internal class ProductListViewModel @ViewModelInject constructor(
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val logger: Logger
 ) : BaseViewModel<ProductListViewModel.State>(State.Loading) {
 
     init {
@@ -36,7 +40,18 @@ internal class ProductListViewModel @ViewModelInject constructor(
     private fun syncProducts() {
         disposables += productRepository.syncProducts()
             .subscribeOn(Schedulers.io())
-            .subscribe()
+            .subscribeBy(
+                onError =  { throwable ->
+                    logger.debug(
+                        tag = this.javaClass.simpleName,
+                        message = "HttpErrorOccurred during sync",
+                        throwable = throwable
+                    )
+                    if ((state.requireValue() as? State.Loaded)?.products?.isEmpty() == true) {
+                        setState(State.NoResults)
+                    }
+                }
+            )
     }
 
     sealed class State {

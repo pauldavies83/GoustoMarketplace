@@ -2,6 +2,7 @@ package dev.pauldavies.goustomarketplace.productlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
+import dev.pauldavies.goustomarketplace.base.Logger
 import dev.pauldavies.goustomarketplace.base.requireValue
 import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
@@ -12,6 +13,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 
 class ProductListViewModelTest {
 
@@ -44,14 +46,37 @@ class ProductListViewModelTest {
         whenever(it.syncProducts()).thenReturn(Completable.complete())
         whenever(it.products()).thenReturn(Observable.just(listOf(product)))
     }
-
-    private val viewModel by lazy { ProductListViewModel(productRepository) }
+    private val logger = mock<Logger>()
+    private val viewModel by lazy { ProductListViewModel(productRepository, logger) }
 
     @Test
     fun `on start, sync products with api`() {
         viewModel
 
         verify(productRepository, times(1)).syncProducts()
+    }
+
+    @Test
+    fun `when error on sync products with api, error is logged`() {
+        val throwable = Throwable()
+        productRepository.stub { whenever(it.syncProducts()).thenReturn(Completable.error(throwable)) }
+
+        viewModel
+
+        verify(logger, times(1)).debug(anyString(), anyString(), eq(throwable))
+    }
+
+    @Test
+    fun `when error on first sync products with api, state is no results`() {
+        val throwable = Throwable()
+        productRepository.stub {
+            whenever(it.syncProducts()).thenReturn(Completable.error(throwable))
+            whenever(it.products()).thenReturn(Observable.just(emptyList()))
+        }
+
+        viewModel.apply {
+            assertTrue(state.requireValue() is ProductListViewModel.State.NoResults)
+        }
     }
 
     @Test
@@ -63,7 +88,7 @@ class ProductListViewModelTest {
     }
 
     @Test
-    fun `if no products from repository, state is loading`() {
+    fun `when no products from repository, state is no results`() {
         productRepository.stub { whenever(it.products()).thenReturn(Observable.just(emptyList())) }
         viewModel.apply {
             assertTrue(state.requireValue() is ProductListViewModel.State.NoResults)
