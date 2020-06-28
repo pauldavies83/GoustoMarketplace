@@ -2,8 +2,7 @@ package dev.pauldavies.goustomarketplace.util
 
 import dev.pauldavies.goustomarketplace.api.ApiCategory
 import dev.pauldavies.goustomarketplace.api.ApiProduct
-import dev.pauldavies.goustomarketplace.api.ApiProductImage
-import dev.pauldavies.goustomarketplace.api.ApiProductImageSize
+import dev.pauldavies.goustomarketplace.api.ApiProductImages
 import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
 import dev.pauldavies.goustomarketplace.persistence.model.DbProduct
 import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategories
@@ -12,6 +11,7 @@ import java.util.*
 
 fun randomString() = UUID.randomUUID().toString()
 fun randomDouble() = Random().nextDouble()
+fun randomInt() = Random().nextInt()
 
 object ProductCreator {
     private val productId = randomString()
@@ -31,7 +31,7 @@ object ProductCreator {
             title = productTitle,
             description = productDescription,
             list_price = productPrice,
-            images = ApiProductImageSize(ApiProductImage(src = productImageUrl)),
+            images = ApiProductImages(listOf(productImageUrl)),
             categories = apiCategories,
             age_restricted = productAgeRestricted
         )
@@ -44,7 +44,7 @@ object ProductCreator {
                 title = apiProduct.title,
                 description = apiProduct.description,
                 price = apiProduct.list_price,
-                imageUrl = apiProduct.images.size?.src,
+                imageUrl = apiProduct.images.imageSizeUrls.firstOrNull(),
                 ageRestricted = apiProduct.age_restricted
             ),
             categories = apiProduct.categories.map { DbCategory(it.id, it.title) }

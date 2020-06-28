@@ -3,9 +3,11 @@ package dev.pauldavies.goustomarketplace.repository
 import com.nhaarman.mockitokotlin2.*
 import dev.pauldavies.goustomarketplace.api.ApiProductResponse
 import dev.pauldavies.goustomarketplace.api.GoustoApi
+import dev.pauldavies.goustomarketplace.base.DeviceMetrics
 import dev.pauldavies.goustomarketplace.persistence.ProductsStorage
 import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategoriesCrossRef
 import dev.pauldavies.goustomarketplace.util.ProductCreator
+import dev.pauldavies.goustomarketplace.util.randomInt
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.junit.Test
@@ -21,9 +23,13 @@ class ProductRepositoryTest {
         DbProductWithCategoriesCrossRef(dbProductWithCategories.product.id, dbProductWithCategories.categories[1].id)
     )
 
+    private val deviceMetrics = mock<DeviceMetrics>() {
+        whenever(it.screenSize()).thenReturn(DeviceMetrics.Size(randomInt(), randomInt()))
+    }
+
     private val response = ApiProductResponse(listOf(apiProduct))
     private val goustoApi = mock<GoustoApi> {
-        whenever(it.getProducts()).thenReturn(Single.just(response))
+        whenever(it.getProducts(deviceMetrics.screenSize().x)).thenReturn(Single.just(response))
     }
 
     private val productsStorage = mock<ProductsStorage> {
@@ -31,7 +37,9 @@ class ProductRepositoryTest {
         whenever(it.getProductWithCategories(any())).thenReturn(Single.just(dbProductWithCategories))
     }
 
-    private val repository by lazy { ProductRepository(goustoApi, productsStorage) }
+    private val repository by lazy {
+        ProductRepository(goustoApi, productsStorage, deviceMetrics)
+    }
 
     @Test
     fun `products database response returned as queried`() {
@@ -46,6 +54,13 @@ class ProductRepositoryTest {
     }
 
     @Test
+    fun `screen width passed to api as requested image width`() {
+        repository.syncProducts().test()
+
+        verify(goustoApi).getProducts(deviceMetrics.screenSize().x)
+    }
+
+    @Test
     fun `when api sync succeeds, insert values into database`() {
         repository.syncProducts().test()
 
@@ -55,7 +70,7 @@ class ProductRepositoryTest {
     @Test
     fun `when api sync fails, database response returned as queried`() {
         goustoApi.stub {
-            whenever(it.getProducts()).thenReturn(Single.error(Throwable()))
+            whenever(it.getProducts(any())).thenReturn(Single.error(Throwable()))
         }
         repository.syncProducts()
 

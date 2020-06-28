@@ -3,6 +3,7 @@ package dev.pauldavies.goustomarketplace.repository
 import dev.pauldavies.goustomarketplace.api.ApiCategory
 import dev.pauldavies.goustomarketplace.api.ApiProduct
 import dev.pauldavies.goustomarketplace.api.GoustoApi
+import dev.pauldavies.goustomarketplace.base.DeviceMetrics
 import dev.pauldavies.goustomarketplace.base.emptyString
 import dev.pauldavies.goustomarketplace.persistence.ProductsStorage
 import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 internal class ProductRepository @Inject constructor(
     private val goustoApi: GoustoApi,
-    private val productsStorage: ProductsStorage
+    private val productsStorage: ProductsStorage,
+    private val deviceMetrics: DeviceMetrics
 ) {
 
     fun product(productId: String): Single<Product> {
@@ -33,7 +35,7 @@ internal class ProductRepository @Inject constructor(
     }
 
     fun syncProducts(): Completable {
-        return goustoApi.getProducts()
+        return goustoApi.getProducts(imageWidth = deviceMetrics.screenSize().x)
             .doOnSuccess { apiResponse ->
                 insertApiResponseToStorage(apiResponse.data)
             }.ignoreElement()
@@ -68,7 +70,7 @@ private fun ApiProduct.toDbProduct() = DbProduct(
     title = title,
     description = description,
     price = list_price,
-    imageUrl = images.size?.src,
+    imageUrl = images.imageSizeUrls.firstOrNull(),
     ageRestricted = age_restricted
 )
 
