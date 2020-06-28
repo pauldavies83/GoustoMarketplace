@@ -44,7 +44,7 @@ class ProductListViewModelTest {
 
     private val productRepository = mock<ProductRepository> {
         whenever(it.syncProducts()).thenReturn(Completable.complete())
-        whenever(it.products()).thenReturn(Observable.just(listOf(product)))
+        whenever(it.products(any())).thenReturn(Observable.just(listOf(product)))
     }
     private val logger = mock<Logger>()
     private val viewModel by lazy { ProductListViewModel(productRepository, logger) }
@@ -71,7 +71,7 @@ class ProductListViewModelTest {
         val throwable = Throwable()
         productRepository.stub {
             whenever(it.syncProducts()).thenReturn(Completable.error(throwable))
-            whenever(it.products()).thenReturn(Observable.just(emptyList()))
+            whenever(it.products(any())).thenReturn(Observable.just(emptyList()))
         }
 
         viewModel.apply {
@@ -81,7 +81,7 @@ class ProductListViewModelTest {
 
     @Test
     fun `on start, state is loading`() {
-        productRepository.stub { whenever(it.products()).thenReturn(Observable.empty()) }
+        productRepository.stub { whenever(it.products(any())).thenReturn(Observable.empty()) }
         viewModel.apply {
             assertTrue(state.requireValue() is ProductListViewModel.State.Loading)
         }
@@ -89,7 +89,7 @@ class ProductListViewModelTest {
 
     @Test
     fun `when no products from repository, state is no results`() {
-        productRepository.stub { whenever(it.products()).thenReturn(Observable.just(emptyList())) }
+        productRepository.stub { whenever(it.products(any())).thenReturn(Observable.just(emptyList())) }
         viewModel.apply {
             assertTrue(state.requireValue() is ProductListViewModel.State.NoResults)
         }
@@ -102,6 +102,15 @@ class ProductListViewModelTest {
                 expectedItems,
                 (state.requireValue() as ProductListViewModel.State.Loaded).products
             )
+        }
+    }
+
+    @Test
+    fun `when search query changed, passed to repository`() {
+        viewModel.apply {
+            onQueryChanged("query")
+
+            verify(productRepository).products("query")
         }
     }
 }

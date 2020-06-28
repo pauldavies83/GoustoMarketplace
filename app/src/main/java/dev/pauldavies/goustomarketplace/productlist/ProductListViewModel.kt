@@ -10,6 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import java.text.NumberFormat
 import java.util.*
 
@@ -18,10 +19,15 @@ internal class ProductListViewModel @ViewModelInject constructor(
     private val logger: Logger
 ) : BaseViewModel<ProductListViewModel.State>(State.Loading) {
 
+    private val searchQuery = PublishSubject.create<String>()
+
     init {
         syncProducts()
 
-        disposables += productRepository.products()
+        disposables += searchQuery.startWith("")
+            .switchMap { query ->
+                productRepository.products(query)
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { products ->
@@ -41,7 +47,7 @@ internal class ProductListViewModel @ViewModelInject constructor(
         disposables += productRepository.syncProducts()
             .subscribeOn(Schedulers.io())
             .subscribeBy(
-                onError =  { throwable ->
+                onError = { throwable ->
                     logger.debug(
                         tag = this.javaClass.simpleName,
                         message = "HttpErrorOccurred during sync",
@@ -52,6 +58,10 @@ internal class ProductListViewModel @ViewModelInject constructor(
                     }
                 }
             )
+    }
+
+    fun onQueryChanged(newText: String?) {
+        searchQuery.onNext(newText ?: "")
     }
 
     sealed class State {

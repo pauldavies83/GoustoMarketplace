@@ -3,6 +3,7 @@ package dev.pauldavies.goustomarketplace.repository
 import dev.pauldavies.goustomarketplace.api.ApiCategory
 import dev.pauldavies.goustomarketplace.api.ApiProduct
 import dev.pauldavies.goustomarketplace.api.GoustoApi
+import dev.pauldavies.goustomarketplace.base.emptyString
 import dev.pauldavies.goustomarketplace.persistence.ProductsStorage
 import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
 import dev.pauldavies.goustomarketplace.persistence.model.DbProduct
@@ -17,8 +18,8 @@ internal class ProductRepository @Inject constructor(
     private val productsStorage: ProductsStorage
 ) {
 
-    fun products(): Observable<List<Product>> {
-        return productsStorage.getAllProductsWithCategories()
+    fun products(queryTitle: String = emptyString()): Observable<List<Product>> {
+        return productsStorage.getProductsWithCategories("%$queryTitle%")
             .map { productsWithCategories ->
                 productsWithCategories.map { it.toDomainProduct() }
             }

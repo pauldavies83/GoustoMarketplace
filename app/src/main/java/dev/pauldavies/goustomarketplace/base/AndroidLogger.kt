@@ -3,7 +3,7 @@ package dev.pauldavies.goustomarketplace.base
 import android.util.Log
 
 interface Logger {
-    fun debug(tag: String, message: String, throwable: Throwable?)
+    fun debug(tag: String, message: String, throwable: Throwable? = null)
 }
 
 class AndroidLogger : Logger {

@@ -25,3 +25,4 @@ internal open class BaseViewModel<S>(initialState: S) : ViewModel() {
 }
 
 fun <T : Any> LiveData<T>.requireValue(): T = value!!
+fun emptyString() = ""

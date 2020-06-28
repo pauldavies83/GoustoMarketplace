@@ -1,9 +1,6 @@
 package dev.pauldavies.goustomarketplace.repository
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.stub
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import dev.pauldavies.goustomarketplace.api.*
 import dev.pauldavies.goustomarketplace.persistence.ProductsStorage
 import dev.pauldavies.goustomarketplace.persistence.model.DbCategory
@@ -68,7 +65,7 @@ class ProductRepositoryTest {
     }
 
     private val productsStorage = mock<ProductsStorage> {
-        whenever(it.getAllProductsWithCategories()).thenReturn(Observable.just(dDbProductsWithCategories))
+        whenever(it.getProductsWithCategories(any())).thenReturn(Observable.just(dDbProductsWithCategories))
     }
 
     private val repository by lazy { ProductRepository(goustoApi, productsStorage) }

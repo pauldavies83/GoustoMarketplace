@@ -14,8 +14,8 @@ interface ProductsStorage {
     fun getAllProducts(): Observable<List<DbProduct>>
 
     @Transaction
-    @Query("SELECT * FROM product")
-    fun getAllProductsWithCategories(): Observable<List<DbProductWithCategories>>
+    @Query("SELECT * FROM product WHERE title LIKE :queryTitle")
+    fun getProductsWithCategories(queryTitle: String): Observable<List<DbProductWithCategories>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProducts(products: List<DbProduct>)

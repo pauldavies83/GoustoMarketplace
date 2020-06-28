@@ -2,7 +2,11 @@ package dev.pauldavies.goustomarketplace.productlist
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,8 +25,29 @@ class ProductListFragment : Fragment(R.layout.fragment_product_list) {
     private val viewModel: ProductListViewModel by viewModels()
     private val productListAdapter = ProductListAdapter()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_product_list, menu)
+
+        val searchView = menu.findItem(R.id.productListSearch).actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?) = true
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.onQueryChanged(newText)
+                return true
+            }
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (activity as AppCompatActivity).setSupportActionBar(productListToolbar)
 
         productListRecyclerView.apply {
             adapter = productListAdapter
