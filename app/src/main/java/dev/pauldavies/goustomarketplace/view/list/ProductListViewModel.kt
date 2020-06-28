@@ -14,6 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.text.NumberFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 internal class ProductListViewModel @ViewModelInject constructor(
     private val productRepository: ProductRepository,
@@ -28,6 +29,7 @@ internal class ProductListViewModel @ViewModelInject constructor(
         syncProducts()
 
         disposables += searchQuery.startWith("")
+            .throttleLatest(500, TimeUnit.MILLISECONDS)
             .switchMap { query ->
                 productRepository.products(query)
             }

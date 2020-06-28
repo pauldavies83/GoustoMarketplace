@@ -86,7 +86,7 @@ class ProductListViewModelTest {
                 ProductListItem(
                     product.id,
                     product.title,
-                    "£9.99",
+                    currencyFormtter.format(product.price),
                     product.imageUrl,
                     product.ageRestricted,
                     onClick = {}

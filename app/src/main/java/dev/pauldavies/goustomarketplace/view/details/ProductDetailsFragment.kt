@@ -2,6 +2,8 @@ package dev.pauldavies.goustomarketplace.view.details
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -10,15 +12,30 @@ import androidx.lifecycle.Observer
 import coil.api.load
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.goustomarketplace.R
+import dev.pauldavies.goustomarketplace.base.emptyString
 import kotlinx.android.synthetic.main.fragment_product_details.*
 
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment(R.layout.fragment_product_details) {
 
+    private fun Fragment.configureToolbar(title: String = emptyString(), setDisplayAsHomeUpEnabled: Boolean = false) {
+        val toolbar = view?.findViewById<Toolbar>(R.id.toolbar) ?: return
+        (activity as AppCompatActivity).apply {
+            setSupportActionBar(toolbar)
+            supportActionBar?.let {
+                it.setDisplayHomeAsUpEnabled(setDisplayAsHomeUpEnabled)
+                it.title = title
+            }
+        }
+        toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+    }
+
     private val viewModel: ProductDetailsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        configureToolbar(setDisplayAsHomeUpEnabled = true)
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             productDetailsError.isVisible = state is ProductDetailsViewModel.State.Error
