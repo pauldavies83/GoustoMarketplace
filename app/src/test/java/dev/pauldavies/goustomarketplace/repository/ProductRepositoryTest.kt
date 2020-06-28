@@ -20,6 +20,7 @@ class ProductRepositoryTest {
     private val productTitle = "product title"
     private val productPrice = 9.99
     private val productImageUrl = "https://image.url/1.jpg"
+    private val productAgeRestricted = true
     private val categoryId1 = "id1"
     private val categoryId2 = "id2"
 
@@ -30,7 +31,7 @@ class ProductRepositoryTest {
         DbCategory(categoryId1, categoryTitle1),
         DbCategory(categoryId2, categoryTitle2)
     )
-    private val dbProducts = listOf(DbProduct(productId, productTitle, productPrice, productImageUrl))
+    private val dbProducts = listOf(DbProduct(productId, productTitle, productPrice, productImageUrl, productAgeRestricted))
 
     private val dDbProductsWithCategories = listOf(
         DbProductWithCategories(
@@ -39,7 +40,7 @@ class ProductRepositoryTest {
         )
     )
     private val products = listOf(
-        Product(productId, productTitle, productPrice, productImageUrl, listOf(categoryTitle1, categoryTitle2))
+        Product(productId, productTitle, productPrice, productImageUrl, productAgeRestricted, listOf(categoryTitle1, categoryTitle2))
     )
 
     private val productXCategories = listOf(
@@ -54,6 +55,7 @@ class ProductRepositoryTest {
                 title = productTitle,
                 list_price =  productPrice,
                 images = ApiProductImageSize(ApiProductImage(src = productImageUrl)),
+                age_restricted = productAgeRestricted,
                 categories = listOf(
                     ApiCategory(categoryId1, categoryTitle1),
                     ApiCategory(categoryId2, categoryTitle2)

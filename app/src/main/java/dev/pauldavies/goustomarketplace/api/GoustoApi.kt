@@ -20,7 +20,8 @@ data class ApiProduct(
     val title: String,
     val list_price: Double,
     val categories: List<ApiCategory> = emptyList(),
-    val images: ApiProductImageSize
+    val images: ApiProductImageSize,
+    val age_restricted: Boolean
 )
 
 @Serializable

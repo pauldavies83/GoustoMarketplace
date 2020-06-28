@@ -50,7 +50,8 @@ private fun Product.toProductListItem() = ProductListItem(
     id = id,
     title = title,
     price = currencyFormtter.format(price),
-    imageUrl = imageUrl
+    imageUrl = imageUrl,
+    ageRestricted = ageRestricted
 )
 
 private val currencyFormtter = NumberFormat.getCurrencyInstance().apply {

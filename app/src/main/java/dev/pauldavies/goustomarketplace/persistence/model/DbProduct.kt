@@ -7,7 +7,8 @@ data class DbProduct(
     @PrimaryKey @ColumnInfo(name = "productId") val id: String,
     val title: String,
     val price: Double,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val ageRestricted: Boolean
 )
 
 @Entity(tableName = "category")

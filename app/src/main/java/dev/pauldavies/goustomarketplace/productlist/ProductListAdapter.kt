@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +46,7 @@ internal class ProductListAdapter :
                             setImageResource(R.mipmap.ic_launcher_round)
                         }
                     }
+                    productAgeRestricted.isVisible = ageRestricted
                 }
             }
         }
@@ -56,5 +58,6 @@ data class ProductListItem(
     val id: String,
     val title: String,
     val price: String,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val ageRestricted: Boolean
 )

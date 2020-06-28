@@ -59,7 +59,8 @@ private fun ApiProduct.toDbProduct() = DbProduct(
     id = id,
     title = title,
     price = list_price,
-    imageUrl = images.size?.src
+    imageUrl = images.size?.src,
+    ageRestricted = age_restricted
 )
 
 private fun ApiCategory.toDbCategory() = DbCategory(
@@ -72,6 +73,7 @@ private fun DbProductWithCategories.toDomainProduct() = Product(
     title = product.title,
     price = product.price,
     imageUrl = product.imageUrl,
+    ageRestricted = product.ageRestricted,
     categories = categories.map { it.title }
 )
 
@@ -80,5 +82,6 @@ data class Product(
     val title: String,
     val price: Double,
     val imageUrl: String?,
+    val ageRestricted: Boolean,
     val categories: List<String>
 )

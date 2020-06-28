@@ -25,8 +25,9 @@ class ProductListViewModelTest {
     private val productTitle = "product title"
     private val productPrice = 9.99
     private val productImageUrl = "https://image.url/1.jpg"
+    private val productAgeRestricted = true
     private val product =
-        Product(productId, productTitle, productPrice, productImageUrl, emptyList())
+        Product(productId, productTitle, productPrice, productImageUrl, productAgeRestricted, emptyList())
     private val displayProductPrice = "£9.99"
 
     private val expectedItems = listOf(
@@ -34,7 +35,8 @@ class ProductListViewModelTest {
             productId,
             productTitle,
             displayProductPrice,
-            productImageUrl
+            productImageUrl,
+            productAgeRestricted
         )
     )
 
