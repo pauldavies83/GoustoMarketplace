@@ -11,12 +11,19 @@ import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategorie
 import dev.pauldavies.goustomarketplace.persistence.model.DbProductWithCategoriesCrossRef
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 internal class ProductRepository @Inject constructor(
     private val goustoApi: GoustoApi,
     private val productsStorage: ProductsStorage
 ) {
+
+    fun product(productId: String): Single<Product> {
+        return productsStorage.getProductWithCategories(productId).map {
+            it.toDomainProduct()
+        }
+    }
 
     fun products(queryTitle: String = emptyString()): Observable<List<Product>> {
         return productsStorage.getProductsWithCategories("%$queryTitle%")

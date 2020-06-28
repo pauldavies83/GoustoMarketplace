@@ -18,12 +18,15 @@ val itemCallback = object : DiffUtil.ItemCallback<ProductListItem>() {
 }
 
 internal class ProductListAdapter :
-    ListAdapter<ProductListItem, ProductListAdapter.ProductViewHolder>(itemCallback) {
+    ListAdapter<ProductListItem, ProductListAdapter.ProductViewHolder>(
+        itemCallback
+    ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         return ProductViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.item_product_list, parent, false)
+                R.layout.item_product_list, parent, false
+            )
         )
     }
 
@@ -31,10 +34,11 @@ internal class ProductListAdapter :
         getItem(position)?.let { holder.bind(it) }
     }
 
-    class ProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(product: ProductListItem) {
             itemView.apply {
-                with (product) {
+                with(product) {
+                    setOnClickListener { onClick(id) }
                     productTitle.text = title
                     productPrice.text = price
                     productImage.apply {
@@ -59,5 +63,15 @@ data class ProductListItem(
     val title: String,
     val price: String,
     val imageUrl: String?,
-    val ageRestricted: Boolean
-)
+    val ageRestricted: Boolean,
+    val onClick: (String) -> Unit
+) {
+    override fun equals(other: Any?): Boolean {
+        return other is ProductListItem &&
+                id == other.id &&
+                title == other.title &&
+                price == other.price &&
+                imageUrl == other.imageUrl &&
+                ageRestricted == other.ageRestricted
+    }
+}

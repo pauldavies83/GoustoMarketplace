@@ -3,6 +3,7 @@ package dev.pauldavies.goustomarketplace.productlist
 import androidx.hilt.lifecycle.ViewModelInject
 import dev.pauldavies.goustomarketplace.base.BaseViewModel
 import dev.pauldavies.goustomarketplace.base.Logger
+import dev.pauldavies.goustomarketplace.base.emptyString
 import dev.pauldavies.goustomarketplace.base.requireValue
 import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
@@ -17,7 +18,9 @@ import java.util.*
 internal class ProductListViewModel @ViewModelInject constructor(
     private val productRepository: ProductRepository,
     private val logger: Logger
-) : BaseViewModel<ProductListViewModel.State>(State.Loading) {
+) : BaseViewModel<ProductListViewModel.State, ProductListViewModel.Event>(
+    State.Loading
+) {
 
     private val searchQuery = PublishSubject.create<String>()
 
@@ -36,7 +39,7 @@ internal class ProductListViewModel @ViewModelInject constructor(
                         State.NoResults
                     } else {
                         State.Loaded(
-                            products.map { it.toProductListItem() }
+                            products.map { it.toProductListItem(::onClickProduct) }
                         )
                     }
                 )
@@ -60,8 +63,12 @@ internal class ProductListViewModel @ViewModelInject constructor(
             )
     }
 
+    private fun onClickProduct(productId: String) {
+        sendEvent(Event.OpenProductDetails(productId))
+    }
+
     fun onQueryChanged(newText: String?) {
-        searchQuery.onNext(newText ?: "")
+        searchQuery.onNext(newText ?: emptyString())
     }
 
     sealed class State {
@@ -69,15 +76,21 @@ internal class ProductListViewModel @ViewModelInject constructor(
         object NoResults : State()
         data class Loaded(val products: List<ProductListItem>) : State()
     }
+
+    sealed class Event {
+        data class OpenProductDetails(val productId: String) : Event()
+    }
 }
 
-private fun Product.toProductListItem() = ProductListItem(
-    id = id,
-    title = title,
-    price = currencyFormtter.format(price),
-    imageUrl = imageUrl,
-    ageRestricted = ageRestricted
-)
+private fun Product.toProductListItem(onClick: (String) -> Unit) =
+    ProductListItem(
+        id = id,
+        title = title,
+        price = currencyFormtter.format(price),
+        imageUrl = imageUrl,
+        ageRestricted = ageRestricted,
+        onClick = onClick
+    )
 
 private val currencyFormtter = NumberFormat.getCurrencyInstance().apply {
     maximumFractionDigits = 2

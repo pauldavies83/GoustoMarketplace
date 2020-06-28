@@ -24,21 +24,11 @@ class ProductRepositoryTest {
     private val categoryTitle1 = "title1"
     private val categoryTitle2 = "title2"
 
-    private val dbCategories = listOf(
-        DbCategory(categoryId1, categoryTitle1),
-        DbCategory(categoryId2, categoryTitle2)
-    )
-    private val dbProducts = listOf(DbProduct(productId, productTitle, productPrice, productImageUrl, productAgeRestricted))
+    private val dbCategories = listOf(DbCategory(categoryId1, categoryTitle1), DbCategory(categoryId2, categoryTitle2))
+    private val dbProduct = DbProduct(productId, productTitle, productPrice, productImageUrl, productAgeRestricted)
+    private val dbProductWithCategories = DbProductWithCategories(dbProduct, dbCategories)
 
-    private val dDbProductsWithCategories = listOf(
-        DbProductWithCategories(
-            dbProducts[0],
-            dbCategories
-        )
-    )
-    private val products = listOf(
-        Product(productId, productTitle, productPrice, productImageUrl, productAgeRestricted, listOf(categoryTitle1, categoryTitle2))
-    )
+    private val product = Product(productId, productTitle, productPrice, productImageUrl, productAgeRestricted, listOf(categoryTitle1, categoryTitle2))
 
     private val productXCategories = listOf(
         DbProductWithCategoriesCrossRef(productId, categoryId1),
@@ -50,7 +40,7 @@ class ProductRepositoryTest {
             ApiProduct(
                 id = productId,
                 title = productTitle,
-                list_price =  productPrice,
+                list_price = productPrice,
                 images = ApiProductImageSize(ApiProductImage(src = productImageUrl)),
                 age_restricted = productAgeRestricted,
                 categories = listOf(
@@ -65,26 +55,29 @@ class ProductRepositoryTest {
     }
 
     private val productsStorage = mock<ProductsStorage> {
-        whenever(it.getProductsWithCategories(any())).thenReturn(Observable.just(dDbProductsWithCategories))
+        whenever(it.getProductsWithCategories(any())).thenReturn(Observable.just(listOf(dbProductWithCategories)))
+        whenever(it.getProductWithCategories(any())).thenReturn(Single.just(dbProductWithCategories))
     }
 
     private val repository by lazy { ProductRepository(goustoApi, productsStorage) }
 
     @Test
-    fun `database response returned as queried`() {
+    fun `products database response returned as queried`() {
         repository.products().test()
-            .assertResult(products)
+            .assertResult(listOf(product))
+    }
+
+    @Test
+    fun `product database response returned as queried`() {
+        repository.product(productId).test()
+            .assertResult(product)
     }
 
     @Test
     fun `when api sync succeeds, insert values into database`() {
         repository.syncProducts().test()
 
-        verify(productsStorage).insertProductsWithCategories(
-            dbProducts,
-            dbCategories,
-            productXCategories
-        )
+        verify(productsStorage).insertProductsWithCategories(listOf(dbProduct), dbCategories, productXCategories)
     }
 
     @Test
@@ -95,6 +88,6 @@ class ProductRepositoryTest {
         repository.syncProducts()
 
         repository.products().test()
-            .assertResult(products)
+            .assertResult(listOf(product))
     }
 }

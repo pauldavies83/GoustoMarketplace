@@ -38,7 +38,8 @@ class ProductListViewModelTest {
             productTitle,
             displayProductPrice,
             productImageUrl,
-            productAgeRestricted
+            productAgeRestricted,
+            onClick = {}
         )
     )
 
@@ -47,7 +48,12 @@ class ProductListViewModelTest {
         whenever(it.products(any())).thenReturn(Observable.just(listOf(product)))
     }
     private val logger = mock<Logger>()
-    private val viewModel by lazy { ProductListViewModel(productRepository, logger) }
+    private val viewModel by lazy {
+        ProductListViewModel(
+            productRepository,
+            logger
+        )
+    }
 
     @Test
     fun `on start, sync products with api`() {
@@ -98,10 +104,7 @@ class ProductListViewModelTest {
     @Test
     fun `products from repository mapped to loaded state`() {
         viewModel.apply {
-            assertEquals(
-                expectedItems,
-                (state.requireValue() as ProductListViewModel.State.Loaded).products
-            )
+            assertEquals(expectedItems, requireLoadedState().products)
         }
     }
 
@@ -113,4 +116,17 @@ class ProductListViewModelTest {
             verify(productRepository).products("query")
         }
     }
+
+    @Test
+    fun `when product clicked, show product details`() {
+        viewModel.apply {
+            val product = requireLoadedState().products.first()
+            product.onClick(product.id)
+
+            assertEquals(ProductListViewModel.Event.OpenProductDetails(product.id), events.requireValue().event)
+        }
+    }
+
+    private fun ProductListViewModel.requireLoadedState() =
+        (state.requireValue() as ProductListViewModel.State.Loaded)
 }

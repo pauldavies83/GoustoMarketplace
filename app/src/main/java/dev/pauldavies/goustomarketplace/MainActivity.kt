@@ -2,6 +2,7 @@ package dev.pauldavies.goustomarketplace
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.goustomarketplace.productlist.ProductListFragment
@@ -18,3 +19,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+fun Fragment.requireAppCompatActivity() = activity as AppCompatActivity

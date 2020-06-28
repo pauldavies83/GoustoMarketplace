@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,13 +18,16 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.goustomarketplace.R
 import dev.pauldavies.goustomarketplace.dp
+import dev.pauldavies.goustomarketplace.productdetails.ProductDetailsFragment
+import dev.pauldavies.goustomarketplace.requireAppCompatActivity
 import kotlinx.android.synthetic.main.fragment_product_list.*
 
 @AndroidEntryPoint
 class ProductListFragment : Fragment(R.layout.fragment_product_list) {
 
     private val viewModel: ProductListViewModel by viewModels()
-    private val productListAdapter = ProductListAdapter()
+    private val productListAdapter =
+        ProductListAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +56,11 @@ class ProductListFragment : Fragment(R.layout.fragment_product_list) {
         productListRecyclerView.apply {
             adapter = productListAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(VerticalSpaceItemDecoration(8.dp))
+            addItemDecoration(
+                VerticalSpaceItemDecoration(
+                    8.dp
+                )
+            )
         }
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
@@ -64,12 +72,35 @@ class ProductListFragment : Fragment(R.layout.fragment_product_list) {
                 productListAdapter.submitList(state.products)
             }
         })
+
+        viewModel.events.observe(viewLifecycleOwner, Observer { singleEvent ->
+            when (val event = singleEvent.event) {
+                is ProductListViewModel.Event.OpenProductDetails -> {
+                    navigateToProductDetails(event.productId)
+                }
+            }
+        })
     }
 
+    private fun navigateToProductDetails(productId: String) {
+        requireAppCompatActivity().supportFragmentManager.commit {
+            replace(
+                android.R.id.content,
+                ProductDetailsFragment.newInstance(productId)
+            )
+            addToBackStack(null)
+        }
+    }
 }
 
-internal class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : ItemDecoration() {
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+internal class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) :
+    ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
         outRect.bottom = verticalSpaceHeight
     }
 }
