@@ -96,7 +96,7 @@ private fun Product.toProductListItem(onClick: (String) -> Unit) =
         onClick = onClick
     )
 
-private val currencyFormtter = NumberFormat.getCurrencyInstance().apply {
+internal val currencyFormtter = NumberFormat.getCurrencyInstance().apply {
     maximumFractionDigits = 2
     currency = Currency.getInstance("GBP")
 }

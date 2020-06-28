@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
 import dev.pauldavies.goustomarketplace.base.Logger
 import dev.pauldavies.goustomarketplace.base.requireValue
-import dev.pauldavies.goustomarketplace.repository.Product
 import dev.pauldavies.goustomarketplace.repository.ProductRepository
+import dev.pauldavies.goustomarketplace.util.ProductCreator
 import dev.pauldavies.goustomarketplace.util.RxSchedulerRule
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -23,36 +23,14 @@ class ProductListViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val productId = "productId"
-    private val productTitle = "product title"
-    private val productPrice = 9.99
-    private val productImageUrl = "https://image.url/1.jpg"
-    private val productAgeRestricted = true
-    private val product =
-        Product(productId, productTitle, productPrice, productImageUrl, productAgeRestricted, emptyList())
-    private val displayProductPrice = "£9.99"
-
-    private val expectedItems = listOf(
-        ProductListItem(
-            productId,
-            productTitle,
-            displayProductPrice,
-            productImageUrl,
-            productAgeRestricted,
-            onClick = {}
-        )
-    )
-
+    private val product = ProductCreator.product()
     private val productRepository = mock<ProductRepository> {
         whenever(it.syncProducts()).thenReturn(Completable.complete())
         whenever(it.products(any())).thenReturn(Observable.just(listOf(product)))
     }
     private val logger = mock<Logger>()
     private val viewModel by lazy {
-        ProductListViewModel(
-            productRepository,
-            logger
-        )
+        ProductListViewModel(productRepository, logger)
     }
 
     @Test
@@ -104,7 +82,16 @@ class ProductListViewModelTest {
     @Test
     fun `products from repository mapped to loaded state`() {
         viewModel.apply {
-            assertEquals(expectedItems, requireLoadedState().products)
+            assertEquals(listOf(
+                ProductListItem(
+                    product.id,
+                    product.title,
+                    "£9.99",
+                    product.imageUrl,
+                    product.ageRestricted,
+                    onClick = {}
+                )
+            ), requireLoadedState().products)
         }
     }
 
@@ -123,7 +110,10 @@ class ProductListViewModelTest {
             val product = requireLoadedState().products.first()
             product.onClick(product.id)
 
-            assertEquals(ProductListViewModel.Event.OpenProductDetails(product.id), events.requireValue().event)
+            assertEquals(
+                ProductListViewModel.Event.OpenProductDetails(product.id),
+                events.requireValue().event
+            )
         }
     }
 
