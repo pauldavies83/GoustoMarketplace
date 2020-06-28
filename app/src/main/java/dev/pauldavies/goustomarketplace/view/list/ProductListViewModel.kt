@@ -1,4 +1,4 @@
-package dev.pauldavies.goustomarketplace.productlist
+package dev.pauldavies.goustomarketplace.view.list
 
 import androidx.hilt.lifecycle.ViewModelInject
 import dev.pauldavies.goustomarketplace.base.BaseViewModel
@@ -64,7 +64,11 @@ internal class ProductListViewModel @ViewModelInject constructor(
     }
 
     private fun onClickProduct(productId: String) {
-        sendEvent(Event.OpenProductDetails(productId))
+        sendEvent(
+            Event.OpenProductDetails(
+                productId
+            )
+        )
     }
 
     fun onQueryChanged(newText: String?) {

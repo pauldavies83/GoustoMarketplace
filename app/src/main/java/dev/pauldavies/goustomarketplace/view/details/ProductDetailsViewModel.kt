@@ -1,4 +1,4 @@
-package dev.pauldavies.goustomarketplace.productdetails
+package dev.pauldavies.goustomarketplace.view.details
 
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
@@ -15,7 +15,9 @@ const val PRODUCT_ID_KEY = "PRODUCT_ID_KEY"
 internal class ProductDetailsViewModel @ViewModelInject constructor(
     productRepository: ProductRepository,
     @Assisted savedStateHandle: SavedStateHandle
-) : BaseViewModel<ProductDetailsViewModel.State, Unit>(State.Loading) {
+) : BaseViewModel<ProductDetailsViewModel.State, Unit>(
+    State.Loading
+) {
 
     private val productId = savedStateHandle.get<String>(PRODUCT_ID_KEY)!!
 
@@ -25,7 +27,11 @@ internal class ProductDetailsViewModel @ViewModelInject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = {
-                    setState(State.Loaded(it.title))
+                    setState(
+                        State.Loaded(
+                            it.title
+                        )
+                    )
                 }
             )
     }

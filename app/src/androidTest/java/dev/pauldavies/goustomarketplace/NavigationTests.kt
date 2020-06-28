@@ -16,9 +16,9 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dev.pauldavies.goustomarketplace.di.NetworkModule
-import dev.pauldavies.goustomarketplace.productdetails.ProductDetailsFragment
-import dev.pauldavies.goustomarketplace.productlist.ProductListFragment
 import dev.pauldavies.goustomarketplace.util.MockWebServerTestCase
+import dev.pauldavies.goustomarketplace.view.details.ProductDetailsFragment
+import dev.pauldavies.goustomarketplace.view.list.ProductListFragment
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

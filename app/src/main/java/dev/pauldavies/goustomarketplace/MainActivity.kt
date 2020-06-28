@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import dagger.hilt.android.AndroidEntryPoint
-import dev.pauldavies.goustomarketplace.productlist.ProductListFragment
+import dev.pauldavies.goustomarketplace.view.list.ProductListFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

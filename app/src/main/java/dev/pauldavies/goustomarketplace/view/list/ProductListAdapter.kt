@@ -1,4 +1,4 @@
-package dev.pauldavies.goustomarketplace.productlist
+package dev.pauldavies.goustomarketplace.view.list
 
 import android.view.LayoutInflater
 import android.view.View

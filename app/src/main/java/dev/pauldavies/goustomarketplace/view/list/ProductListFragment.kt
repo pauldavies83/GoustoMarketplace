@@ -1,4 +1,4 @@
-package dev.pauldavies.goustomarketplace.productlist
+package dev.pauldavies.goustomarketplace.view.list
 
 import android.graphics.Rect
 import android.os.Bundle
@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.goustomarketplace.R
 import dev.pauldavies.goustomarketplace.dp
-import dev.pauldavies.goustomarketplace.productdetails.ProductDetailsFragment
 import dev.pauldavies.goustomarketplace.requireAppCompatActivity
+import dev.pauldavies.goustomarketplace.view.details.ProductDetailsFragment
 import kotlinx.android.synthetic.main.fragment_product_list.*
 
 @AndroidEntryPoint

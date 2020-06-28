@@ -1,4 +1,4 @@
-package dev.pauldavies.goustomarketplace.productdetails
+package dev.pauldavies.goustomarketplace.view.details
 
 import android.os.Bundle
 import android.view.View

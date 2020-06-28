@@ -1,4 +1,4 @@
-package dev.pauldavies.goustomarketplace.productlist
+package dev.pauldavies.goustomarketplace.view.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
